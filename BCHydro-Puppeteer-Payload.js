@@ -1,13 +1,14 @@
-export default async ({ page }) => {
+module.exports = async ({ page }) => {
     try {
         const email = "[EMAIL]";
         const password = "[PASSWORD]";
 
-        await page.setDefaultTimeout(1200000);
-        await page.setDefaultNavigationTimeout(1200000);
-        await page.goto("https://app.bchydro.com/BCHCustomerPortal/web/login.html");
+        await page.goto("https://www.bchydro.com/index.html");
+        await page.waitForSelector('a[href="/BCHCustomerPortal/web/accountsOverview.html"]', { visible: true});
+        await page.click('a[href="/BCHCustomerPortal/web/accountsOverview.html"]');
         await page.waitForSelector("#email");
         await page.type("#email", email);
+        await page.waitForSelector("#password");
         await page.type("#password", password);
         await Promise.all([page.waitForNavigation(), page.click("#submit-button")]);
         
@@ -76,7 +77,6 @@ export default async ({ page }) => {
         const options = await page.$$("div.ui-menu-item-wrapper");
         for (const option of options){
             const text = await page.evaluate(el => el.textContent, option);
-            console.log(text);
             if (text.trim() === "Last billing period") {
                 await option.click();
                 break;
@@ -110,7 +110,11 @@ export default async ({ page }) => {
         const result = { ...billData, ...consumptionData, ...lastBillData, 
             last_run: new Date().toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }) 
         };
-        return result;
+        console.log(result);
+        return {
+            data: result,
+            type: "application/json"
+        };
     } catch (error) {
         return { error: error.message };
     }
