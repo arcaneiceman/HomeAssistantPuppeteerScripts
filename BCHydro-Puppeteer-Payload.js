@@ -3,6 +3,8 @@ module.exports = async ({ page }) => {
         const email = "[EMAIL]";
         const password = "[PASSWORD]";
 
+        await page.setDefaultTimeout(1200000);
+        await page.setDefaultNavigationTimeout(1200000);
         await page.goto("https://www.bchydro.com/index.html");
         await page.waitForSelector('a[href="/BCHCustomerPortal/web/accountsOverview.html"]', { visible: true});
         await page.click('a[href="/BCHCustomerPortal/web/accountsOverview.html"]');
@@ -35,21 +37,21 @@ module.exports = async ({ page }) => {
             const projectedCost = document.querySelector("div.md-value")?.innerText.trim().replace("$", "") || null;
             const table = document.querySelector("table#consumptionTable");
             const rows = table.querySelectorAll("tr");
-            const headers = [...rows[0].querySelectorAll("td")].map((th) => th.innerText.trim()).slice(1);
+            const headers = [...rows[0].querySelectorAll("td")].map((th) => th.innerText.trim());
             
             let firstDate = null;
             let latestValidEntry = null;
             let currentConsumption = 0;
             for (let i = 1; i < rows.length; i++) {
-                const cells = [...rows[i].querySelectorAll("td")].slice(1);
+                const cells = [...rows[i].querySelectorAll("td")];
                 const rowData = {};
                 cells.forEach((cell, index) => {
                     rowData[headers[index]] = cell.innerText.trim();
                 });
-                if (rowData["Total kWh"] !== "N/A"){
-                    currentConsumption += parseFloat(rowData["Total kWh"]?.replace(/[^0-9.]/g, ""));
+                if (rowData["kWh"] !== "N/A"){
+                    currentConsumption += parseFloat(rowData["kWh"]?.replace(/[^0-9.]/g, ""));
                 }
-                if (rowData["Date"] && rowData["Total kWh"] !== "N/A" && rowData["Total cost"] !== "N/A") {
+                if (rowData["Date"]!=="Total" && rowData["kWh"] !== "N/A" && rowData["Cost"] !== "N/A") {
                     latestValidEntry = rowData;
                 }
                 if (i == 1) {
@@ -64,8 +66,8 @@ module.exports = async ({ page }) => {
                 current_consumption: currentConsumption,
                 
                 latest_date: latestValidEntry ? latestValidEntry["Date"] : firstDate,
-                latest_daily_consumption_kwh: latestValidEntry ? latestValidEntry["Total kWh"] : 0,
-                latest_daily_cost_dollars: latestValidEntry ? latestValidEntry["Total cost"].replace("$", "") : 0,
+                latest_daily_consumption_kwh: latestValidEntry ? latestValidEntry["kWh"] : 0,
+                latest_daily_cost_dollars: latestValidEntry ? latestValidEntry["Cost"].replace("$", "") : 0,
             };
         });
 
@@ -88,17 +90,17 @@ module.exports = async ({ page }) => {
             const lastBillingPeriod = document.querySelector("span#titleDateRange")?.innerText.trim() || null;
             const table = document.querySelector("table#consumptionTable");
             const rows = table.querySelectorAll("tr");
-            const headers = [...rows[0].querySelectorAll("td")].map((th) => th.innerText.trim()).slice(1);
+            const headers = [...rows[0].querySelectorAll("td")].map((th) => th.innerText.trim());
             
             let lastBillingPeriodConsumption = 0;
             for (let i = 1; i < rows.length; i++) {
-                const cells = [...rows[i].querySelectorAll("td")].slice(1);
+                const cells = [...rows[i].querySelectorAll("td")];
                 const rowData = {};
                 cells.forEach((cell, index) => {
                     rowData[headers[index]] = cell.innerText.trim();
                 });
-                if (rowData["Total kWh"] !== "N/A"){
-                    lastBillingPeriodConsumption += parseFloat(rowData["Total kWh"]?.replace(/[^0-9.]/g, ""));
+                if (rowData["kWh"] !== "N/A"){
+                    lastBillingPeriodConsumption += parseFloat(rowData["kWh"]?.replace(/[^0-9.]/g, ""));
                 }
             }
             return {
