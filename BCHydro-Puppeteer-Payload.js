@@ -15,7 +15,12 @@ module.exports = async ({ page }) => {
         // Load Main Page
         // Dismiss any modals
         await page.waitForSelector('#detailCon');
-        document.querySelector('.modal .close')?.click();
+        await page.evaluate(() => {
+          const btn = document.querySelector('.modal .close');
+          if (btn) {
+            btn.click();
+          }
+        });
         await page.waitForSelector("#detailCon:not([disabled])");
         
         const billData = await page.evaluate(() => {
