@@ -16,10 +16,10 @@ module.exports = async ({ page }) => {
         // Dismiss any modals
         await page.waitForSelector('#detailCon');
         await page.evaluate(() => {
-          const btn = document.querySelector('.modal .close');
-          if (btn) {
-            btn.click();
-          }
+            const btn = document.querySelector('.modal .close');
+            if (btn) {
+                btn.click();
+            }
         });
         await page.waitForSelector("#detailCon:not([disabled])");
         
@@ -92,8 +92,8 @@ module.exports = async ({ page }) => {
             }
         }
         await page.waitForFunction(() => {
-          const table = document.querySelector('table#consumptionTable');
-          return table && table.querySelectorAll('tr').length > 1;
+            const table = document.querySelector('table#consumptionTable');
+            return table && table.querySelectorAll('tr').length > 1;
         });
         await page.waitForSelector("#titleDateRange");
         const lastBillData = await page.evaluate(() => {
