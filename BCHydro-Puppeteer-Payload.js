@@ -3,10 +3,8 @@ module.exports = async ({ page }) => {
         const email = "[EMAIL]";
         const password = "[PASSWORD]";
 
-        await page.setDefaultTimeout(1200000);
-        await page.setDefaultNavigationTimeout(1200000);
         await page.goto("https://www.bchydro.com/index.html");
-        await page.waitForSelector('a[href="/BCHCustomerPortal/web/accountsOverview.html"]', { visible: true});
+        await page.waitForSelector('a[href="/BCHCustomerPortal/web/accountsOverview.html"]', { visible: true });
         await page.click('a[href="/BCHCustomerPortal/web/accountsOverview.html"]');
         await page.waitForSelector("#email");
         await page.type("#email", email);
@@ -84,7 +82,10 @@ module.exports = async ({ page }) => {
                 break;
             }
         }
-        await page.waitForSelector("table#consumptionTable");
+        await page.waitForFunction(() => {
+          const table = document.querySelector('table#consumptionTable');
+          return table && table.querySelectorAll('tr').length > 1;
+        });
         await page.waitForSelector("#titleDateRange");
         const lastBillData = await page.evaluate(() => {
             const lastBillingPeriod = document.querySelector("span#titleDateRange")?.innerText.trim() || null;

@@ -3,8 +3,6 @@ export default async ({ page }) => {
         const username = "[USERNAME]";
         const password = "[PASSWORD]";
         
-        await page.setDefaultTimeout(1200000);
-        await page.setDefaultNavigationTimeout(1200000);
         await page.goto("https://www.fortisbc.com/accountonline");
         await page.waitForSelector("#user");
         await page.type("#user", username);
