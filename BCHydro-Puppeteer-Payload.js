@@ -1,4 +1,4 @@
-module.exports = async ({ page }) => {
+export default async ({ page }) => {
     try {
         const email = "[EMAIL]";
         const password = "[PASSWORD]";
@@ -37,7 +37,10 @@ module.exports = async ({ page }) => {
         await Promise.all([page.waitForNavigation(), page.click("#detailCon")]);
         await page.waitForSelector("#tableBtnLabel");
         await page.click("#tableBtnLabel");
-        await page.waitForSelector("table#consumptionTable");
+        await page.waitForSelector('table#consumptionTable', {
+            visible: true,
+        });
+
         const consumptionData = await page.evaluate(() => {
             const billingPeriod = document.querySelector("span#titleDateRange")?.innerText.trim() || null;
             const costToDate = document.querySelector("div.bch-pb-progress-text")?.innerText.trim().replace("$", "").replace("*", "") || null;
@@ -91,9 +94,8 @@ module.exports = async ({ page }) => {
                 break;
             }
         }
-        await page.waitForFunction(() => {
-            const table = document.querySelector('table#consumptionTable');
-            return table && table.querySelectorAll('tr').length > 1;
+        await page.waitForSelector('table#consumptionTable', {
+            visible: true,
         });
         await page.waitForSelector("#titleDateRange");
         const lastBillData = await page.evaluate(() => {
@@ -122,12 +124,10 @@ module.exports = async ({ page }) => {
         const result = { ...billData, ...consumptionData, ...lastBillData, 
             last_run: new Date().toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }) 
         };
-        console.log(result);
-        return {
-            data: result,
-            type: "application/json"
-        };
+        console.log(JSON.stringify(result));
+        return result;
     } catch (error) {
+        console.log(JSON.stringify(error));
         return { error: error.message };
     }
 };

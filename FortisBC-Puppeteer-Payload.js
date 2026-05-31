@@ -59,8 +59,10 @@ export default async ({ page }) => {
             };
         });
         const result = { ...billData, ...consumptionData };       
+        console.log(JSON.stringify(result));
         return result;
     } catch (error) {
+        console.log(JSON.stringify(error));
         return { error: error.message };
     }
 };
