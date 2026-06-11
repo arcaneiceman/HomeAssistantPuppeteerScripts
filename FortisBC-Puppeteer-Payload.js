@@ -3,14 +3,14 @@ export default async ({ page }) => {
         const username = "[USERNAME]";
         const password = "[PASSWORD]";
         
-        await page.goto("https://www.fortisbc.com/accountonline");
-        await page.waitForSelector("#user");
-        await page.type("#user", username);
-        await page.type("#password", password);
-        await Promise.all([
-            page.waitForNavigation(),
-            page.click('input[title="Account login"]')
-        ]);
+        await page.goto("https://www.fortisbc.com");
+        await page.waitForSelector('input[name="User"]');
+        await page.waitForSelector('input[name="Password"]');
+        await page.type('input[name="User"]', username);
+        await page.type('input[name="Password"]', password);
+        await page.keyboard.press('Enter');
+        await page.waitForNavigation();
+        await page.goto('https://accounts.fortisbc.com');
 
         // Wait for landing page to load and 
         await page.waitForSelector('.bill-section');
